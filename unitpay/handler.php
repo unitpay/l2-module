@@ -2,6 +2,7 @@
 error_reporting(0);
 include_once 'lib/ConfigWritter.php';
 include_once 'lib/Model.php';
+include_once 'lib/Logger.php';
 
 
 class Handler
@@ -9,6 +10,12 @@ class Handler
     function process()
     {
         try {
+
+            $debug = ConfigWritter::getInstance()->getParameter('DEBUG');
+            if ($debug){
+                Logger::getInstance()->writeString($_SERVER['QUERY_STRING'], 'URL');
+            }
+
             if (empty($_GET)) {
                 header('Content-Type: text/html; charset=utf-8');
                 die ('Адрес данного скрипта нужно прописать в поле "URL скрипта обработчика" в настройках вашего проекта');
@@ -24,10 +31,16 @@ class Handler
             $method = $request['method'];
             $params = $request['params'];
 
-            if ($params['signature'] != $this->getSha256SignatureByMethodAndParams(
-                    $method,
-                    $params,
-                    ConfigWritter::getInstance()->getParameter('SECRET_KEY'))) {
+            $signature = $this->getSha256SignatureByMethodAndParams(
+                $method,
+                $params,
+                ConfigWritter::getInstance()->getParameter('SECRET_KEY'));
+
+            if ($debug){
+                Logger::getInstance()->writeString($signature, 'AFTER HASH STRING');
+            }
+
+            if ($params['signature'] != $signature) {
                 throw new Exception("Некорректная цифровая подпись");
             }
             if (!isset($params['unitpayId']) || !isset($params['sum']) || !isset($params['account'])) {
@@ -180,8 +193,15 @@ class Handler
         ksort($params);
         unset($params['sign']);
         unset($params['signature']);
+        $str = $method.$delimiter.join($delimiter, $params).$delimiter.$secretKey;
 
-        return hash('sha256', $method.$delimiter.join($delimiter, $params).$delimiter.$secretKey);
+        $debug = ConfigWritter::getInstance()->getParameter('DEBUG');
+        if ($debug){
+            Logger::getInstance()->writeArray($params, 'PARAMS ARRAY');
+            Logger::getInstance()->writeString($str, 'BEFORE HASH STRING');
+        }
+
+        return hash('sha256', $str);
     }
 
     /**
