@@ -1,5 +1,5 @@
 <?php return array(
-'DEBUG'=>0,
+'DEBUG' => '0',
 'ITEM_PRICE' => '30',
 'ITEM_ID' => '4037',
 'SECRET_KEY' => 'sdfsdf',
