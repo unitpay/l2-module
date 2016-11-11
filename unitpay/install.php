@@ -329,7 +329,7 @@ class Install
         <p><strong>Что дальше?</strong></p>
         <ul>
             <li>
-                     <a style="font-weight:bold;text-decoration:underline" target="_blank" href="form-example.html#game1">
+                     <a style="font-weight:bold;text-decoration:underline" target="_blank" href="form-example.php#game1">
                         Разместите HTML-код формы оплаты
                     </a> на страницах вашего сайта. <span style="color:#888">Если Вы используете движок StressWeb, то можете разместить HTML-код прямо из админ-панели в требуемом разделе сайта.</span>
             </li>
