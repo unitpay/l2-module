@@ -7,6 +7,7 @@
 'DB_USER' => 'homestead',
 'DB_PASS' => 'secret',
 'DB_NAME' => 'l2',
+'DB_PORT' => '',
 'ITEM_TABLE' => 'items_delayed',
 'PROJECT_ID' => '1',
 ); ?>

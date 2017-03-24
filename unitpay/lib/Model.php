@@ -19,13 +19,15 @@ class Model
         $dbname = $config->getParameter('DB_NAME');
         $dbpass = $config->getParameter('DB_PASS');
         $dbuser = $config->getParameter('DB_USER');
+        $dbport = $config->getParameter('DB_PORT');
 
         if (empty($dbhost) || empty($dbname) || empty($dbuser)) {
             throw new Exception('Не установлены конфигурационные параметры для соединения с БД');
         }
 
+        $dbport = empty($dbport)?ini_get("mysqli.default_port"):$dbport;
         $this->mysqli = @new mysqli (
-            $dbhost, $dbuser, $dbpass, $dbname
+            $dbhost, $dbuser, $dbpass, $dbname, $dbport
         );
         $this->mysqli->query("SET NAMES 'utf8'");
 

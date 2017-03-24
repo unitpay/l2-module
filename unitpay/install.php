@@ -40,6 +40,7 @@ class Install
     'DB_HOST' => 'localhost',
     'DB_USER' => 'root',
     'DB_PASS' => '',
+    'DB_PORT' => '',
     'ITEM_TABLE' => '',
     'DB_NAME' => 'test'
 );";
@@ -133,18 +134,21 @@ class Install
             $dbname = $config->getParameter('DB_NAME');
             $dbpass = $config->getParameter('DB_PASS');
             $dbuser = $config->getParameter('DB_USER');
+            $dbport = $config->getParameter('DB_PORT');
 
             if (!empty($_POST)) {
                 $dbhost = $_POST['DB_HOST'];
                 $dbname = $_POST['DB_NAME'];
                 $dbpass = $_POST['DB_PASS'];
                 $dbuser = $_POST['DB_USER'];
+                $dbport = $_POST['DB_PORT'];
                 if (empty($dbhost) || empty($dbname) || empty($dbuser)) {
                     throw new Exception('Не установлены конфигурационные параметры для соединения с БД');
                 }
 
+                $dbport = empty($dbport)?ini_get("mysqli.default_port"):$dbport;
                 $mysqli = @new mysqli (
-                    $dbhost, $dbuser, $dbpass, $dbname
+                    $dbhost, $dbuser, $dbpass, $dbname, $dbport
                 );
                 /* проверка подключения */
                 if (mysqli_connect_errno()) {
@@ -178,6 +182,7 @@ class Install
                 $config->setParameter('DB_NAME', $dbname);
                 $config->setParameter('DB_PASS', $dbpass);
                 $config->setParameter('DB_USER', $dbuser);
+                $config->setParameter('DB_PORT', $dbport);
 
                 $content = '<div class="alert alert-success">Соединение с базой прошло успешно, можно переходить к следующему шагу</div>'.$content;
                 header("Location: ?action=step3");
@@ -192,6 +197,7 @@ class Install
             <div><label class="required" for="DB_NAME">Имя БД</label><input type="text" value="'.$dbname.'" style="width:484px" required="required" name="DB_NAME" id="DB_NAME"></div>
             <div><label class="required" for="DB_USER">Имя пользователя</label><input type="text" value="'.$dbuser.'" style="width:484px" required="required" name="DB_USER" id="DB_USER"></div>
             <div><label class="required" for="DB_PASS">Пароль пользователя</label><input type="password" value="" style="width:484px" name="DB_PASS" id="DB_PASS"></div>
+            <div><label class="required" for="DB_PORT">Номер порта(необязательный параметр)</label><input type="text" value="'.$dbport.'" style="width:484px" name="DB_PORT" id="DB_PORT"></div>
         ';
         $this->loadView(array(
             'title' => 'Проверка соединения с БД',
